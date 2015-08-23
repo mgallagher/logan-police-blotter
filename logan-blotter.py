@@ -25,7 +25,7 @@ class Report(Model):
 
 db.connect()
 
-data = urllib2.urlopen('http://www.loganutah.org/Police/Reports/json/calls.cfm?hours=100000')
+data = urllib2.urlopen('http://www.loganutah.org/Police/Reports/json/calls.cfm?hours=12')
 reports = json.load(data)['DATA']
 # reports = [[str(r).rstrip('\n\n') for r in report] for report in reports]
 
@@ -35,6 +35,9 @@ month_abbr = calendar.month_abbr[today.month]
 
 
 reports = [[r for r in report] for report in reports]
+
+print "Before", Report.select().count()
+# import pdb; pdb.set_trace()
 
 for r in reports:
 
@@ -48,23 +51,34 @@ for r in reports:
     narrative = re.sub(strip_trailing_spaces, "", narrative)
 
     # print narrative
-    print r[0].rstrip()
-    r = Report.create(
-    incident_num  = r[0].rstrip(),
-    date_reported = datetime.strptime(r[1], "%B, %d %Y %H:%M:%S"),
-    dispos        = r[2].rstrip(),
-    nature        = r[3].rstrip(),
-    agency        = r[4],
-    narrative     = narrative
-    )
-    # r = Report()
-    # r.incident_num  = report[0].rstrip(),
-    # r.date_reported = datetime.strptime(report[1], "%B, %d %Y %H:%M:%S"),
-    # r.dispos        = report[2].rstrip(),
-    # r.nature        = report[3].rstrip(),
-    # r.agency        = report[4].rstrip(),
-    # r.narrative     = narrative
-    # user, created = Report.create_or_get(incident_num=r.incident_num)
+    # print r[0].rstrip()
+    # r = Report.create(
+    # incident_num  = r[0].rstrip(),
+    # date_reported = datetime.strptime(r[1], "%B, %d %Y %H:%M:%S"),
+    # dispos        = r[2].rstrip(),
+    # nature        = r[3].rstrip(),
+    # agency        = r[4],
+    # narrative     = narrative
+    # )
+
+    # new_report = Report()
+    # new_report.incident_num  = r[0].rstrip(),
+    # new_report.date_reported = datetime.strptime(r[1], "%B, %d %Y %H:%M:%S"),
+    # new_report.dispos        = r[2].rstrip(),
+    # new_report.nature        = r[3].rstrip(),
+    # new_report.agency        = r[4],
+    # new_report.narrative     = narrative
+
+    # import pdb; pdb.set_trace()
+    entry, created = Report.get_or_create(
+        incident_num=r[0].rstrip(),
+
+        defaults={
+            'date_reported': datetime.strptime(r[1], "%B, %d %Y %H:%M:%S"),
+            'dispos' : r[2].rstrip(),
+            'nature' : r[3].rstrip(),
+            'agency' : r[4],
+            'narrative' : narrative } )
     # year_pos = r[5].find(str(today.year), 15, 35)
     # if year_pos > 0:
 
@@ -90,7 +104,7 @@ for r in reports:
     #     print "nope"
     # import pdb; pdb.set_trace()
     # break
-
+print "After", Report.select().count()
 # print j['COLUMNS']
 # print "records returned:", len(j['DATA'])
 # August, 21 2015 20:24:41
@@ -112,6 +126,5 @@ for r in reports:
 # rep = Report.create(incident_num="abcd", date_reported=datetime.today(), 
 #     dispos="blah", nature="blahaa", agency="YES", narrative="STUFF HAPPENED")
 # import pdb; pdb.set_trace()
-print Report.select().count()
 # for r in Report.select():
 #     r.delete_instance()
