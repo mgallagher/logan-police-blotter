@@ -1,6 +1,6 @@
 import json
 import urllib2
-import os
+import sys
 import calendar
 import re
 import requests
@@ -8,7 +8,7 @@ from peewee import *
 from datetime import datetime
 from notifications import IFTTT
 
-db_path = os.path.abspath('./logan_blotter.db')
+db_path = sys.path[0]+'/logan_blotter.db'
 db = SqliteDatabase(db_path)
 
 class Report(Model):
