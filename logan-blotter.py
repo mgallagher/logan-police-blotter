@@ -3,8 +3,10 @@ import urllib2
 import os
 import calendar
 import re
+import requests
 from peewee import *
 from datetime import datetime
+from notifications import IFTTT
 
 db_path = os.path.abspath('./logan_blotter.db')
 db = SqliteDatabase(db_path)
@@ -24,6 +26,10 @@ class Report(Model):
 def delete_all_records():
     for r in Report.select():
         r.delete_instance()
+
+def send_notification(value1, value2, value3):
+    payload = { 'value1' : value1, 'value2' : value2, 'value3' : value3 }
+    requests.post("https://maker.ifttt.com/trigger/"+IFTTT.EVENT+"/with/key/"+IFTTT.KEY, data=payload)
 
 db.connect()
 
@@ -62,5 +68,6 @@ for r in reports:
         )
 
 print "Update successful"
-print Report.select().count() - count_before, "records inserted"
-
+added = Report.select().count() - count_before
+print added, "records inserted"
+# send_notification(added, "", "")
