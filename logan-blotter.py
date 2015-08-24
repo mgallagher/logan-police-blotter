@@ -63,5 +63,4 @@ for r in reports:
 
 print "Update successful"
 print Report.select().count() - count_before, "records inserted"
-delete_records()
 
