@@ -13,7 +13,7 @@ db = SqliteDatabase(db_path)
 
 class Report(Model):
     incident_num = CharField(unique=True)
-    date_reported = DateField()
+    date_reported = DateTimeField()
     dispos = CharField()
     nature = CharField()
     agency = CharField(null=True)
